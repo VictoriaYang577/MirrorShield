@@ -1,9 +1,19 @@
 import streamlit as st
 import google.generativeai as genai
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # keep for legacy .env support
+import toml
 import os
 import random
 from utils import sign_map, model, build_chat_prompt, parse_response
+
+# Load api key config at startup
+try:
+    config = toml.load('config.toml')
+    os.environ['GOOGLE_API_KEY'] = config.get('secrets', {}).get('google_api_key', '')
+except Exception:
+    pass
+
+load_dotenv()
 
 # Define sign_map globally so it's available everywhere
 # sign_map = [

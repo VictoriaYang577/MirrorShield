@@ -1,12 +1,20 @@
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+import toml
 
 # Load environment and configure Gemini API key
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 if not api_key:
-    raise EnvironmentError("No API key found. Please set GOOGLE_API_KEY in .env.")
+    # Load from config.toml if not in env
+    try:
+        config = toml.load(os.path.join(os.path.dirname(__file__), 'config.toml'))
+        api_key = config.get('secrets', {}).get('google_api_key')
+    except Exception:
+        api_key = None
+if not api_key:
+    raise EnvironmentError("No API key found. Please set GOOGLE_API_KEY in .env or in config.toml under [secrets].")
 genai.configure(api_key=api_key)
 
 # Define sign_map globally
